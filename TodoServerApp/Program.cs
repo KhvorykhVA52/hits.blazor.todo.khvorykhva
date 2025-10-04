@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using TodoServerApp.Components;
 using TodoServerApp.Components.Account;
 using TodoServerApp.Data;
+using TodoServerApp.Data.Interfaces;
+using TodoServerApp.Data.Services;
 
 namespace TodoServerApp
 {
@@ -23,10 +25,10 @@ namespace TodoServerApp
             builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
             builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-                    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-                })
+            {
+                options.DefaultScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
                 .AddIdentityCookies();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -40,6 +42,7 @@ namespace TodoServerApp
                 .AddDefaultTokenProviders();
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+            builder.Services.AddScoped<IDataService, MSSQLDataService>();
 
             var app = builder.Build();
 
